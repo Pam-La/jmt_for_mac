@@ -1,9 +1,11 @@
-# High-End JMT State Engine for Apple Silicon (Zero-GC & NEON SIMD)
+# High-End JMT State Engine: A PoC for Hardware-Software Co-design
 
-## Vision & Philosophy
-**"Extract 100% of hardware resources up to the limits of mechanical sympathy, even at the cost of sacrificing general-purpose compatibility."**
+## Vision & Philosophy: Preparing for the Next Phase of Blockchain
+As blockchain technology matures toward institutional adoption, CBDCs, and Permissioned Networks (e.g., PoA), the foundational premise of "run-anywhere" decentralization will inevitably shift. In traditional finance (TradFi), extreme performance—such as in High-Frequency Trading (HFT) matching engines—is never achieved on general-purpose cloud instances. It is realized through strict **Hardware-Software Co-design**, where software is fundamentally bound to the physical limits of specific cache architectures and ALUs.
 
-This project rejects the limitations of traditional, general-purpose blockchain node architectures that often compromise for cloud or cross-OS compatibility. It aims to build an extremely optimized, low-level state engine perfectly coupled with the Unified Memory Architecture (UMA), L2 cache lines, and hardware ALUs of Apple Silicon (`darwin/arm64`).
+This project is an experimental Proof of Concept (PoC) that applies this TradFi philosophy to a blockchain state engine. By intentionally abandoning cross-platform, general-purpose compatibility, this architecture explores the absolute performance ceiling possible when a distributed ledger's state storage is strictly locked into a specific hardware architecture—in this case, Apple Silicon (`darwin/arm64`).
+
+It is not just a faster Merkle tree; it is a blueprint for the future of **Appliance Nodes** in institutional blockchain networks. It proves that mathematical limits—such as zero heap allocations and 100% SIMD saturation—can be achieved when a state engine explicitly embraces its underlying silicon.
 
 ## Project Overview
 A complete re-engineering of the Jellyfish Merkle Tree (JMT)—the core state storage for high-performance distributed ledgers (e.g., Aptos, Sui)—using exclusively the pure Go runtime and ARM64 Plan9 assembly.
@@ -13,7 +15,7 @@ It fundamentally eliminates the fatal garbage collector (GC) scanning bottleneck
 ## Core Architecture
 
 * **Absolute Zero-GC (Pointer-Free Layout)**
-  * Utilizes the experimental `goexperiment.arenas` feature in Go 1.20+ for memory pooling.
+  * Utilizes the experimental `goexperiment.arenas` feature in Go for generational memory pooling.
   * Internal `Node` structures are strictly aligned to the 128B cache line size. By eliminating all Go pointers and switching to a 100% value-type array index layout, GC intervention is strictly controlled to **0 seconds**, even with hundreds of millions of nodes residing in memory.
 * **4-Way NEON SIMD Hash Pipeline**
   * Discards the traditional DFS-based tree traversal in favor of a **Bottom-up BFS level-wise merge algorithm**.
@@ -41,6 +43,6 @@ BenchmarkJMTBatchCommit-12               140     8626319 ns/op         0 B/op   
 BenchmarkJMTProofConcurrent-12       1871947       639.8 ns/op         0 B/op        0 allocs/op
 ```
 
-* **Achieved `0 B/op`, `0 allocs/op`**: Completely eliminated heap escapes and memory copying, reducing dynamic allocation overhead to absolute zero for both writes and reads.
-* **100% SIMD Saturation**: Proved that all parent hash computations in the JMT state tree strictly bypass scalar execution and are perfectly distributed to the NEON vector register pipeline.
+* **Achieved `0 B/op`, `0 allocs/op**`: Completely eliminated heap escapes and memory copying, reducing dynamic allocation overhead to absolute zero for both writes and reads.
+* **100% SIMD Saturation**: Proved that all parent hash computations in the JMT state tree (`simd_parent_pct = 100.0%`) strictly bypass scalar execution and are perfectly distributed to the NEON vector register pipeline.
 * **Microsecond-level Latency**: Suppressed single proof generation time to approximately ~600ns through lock-free concurrency control.
