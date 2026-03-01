@@ -43,6 +43,6 @@ BenchmarkJMTBatchCommit-12               140     8626319 ns/op         0 B/op   
 BenchmarkJMTProofConcurrent-12       1871947       639.8 ns/op         0 B/op        0 allocs/op
 ```
 
-* **Achieved `0 B/op`, `0 allocs/op**`: Completely eliminated heap escapes and memory copying, reducing dynamic allocation overhead to absolute zero for both writes and reads.
+* **Achieved `0 B/op`, `0 allocs/op`**: Completely eliminated heap escapes and memory copying, reducing dynamic allocation overhead to absolute zero for both writes and reads.
 * **100% SIMD Saturation**: Proved that all parent hash computations in the JMT state tree (`simd_parent_pct = 100.0%`) strictly bypass scalar execution and are perfectly distributed to the NEON vector register pipeline.
 * **Microsecond-level Latency**: Suppressed single proof generation time to approximately ~600ns through lock-free concurrency control.
